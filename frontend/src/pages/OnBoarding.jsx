@@ -2,6 +2,7 @@ import "../styles/OnBoarding.css";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
+import toast from "react-hot-toast";
 
 const OnBoarding = ({ type }) => {
   const [name, setName] = useState("");
@@ -46,7 +47,7 @@ const OnBoarding = ({ type }) => {
     const token = user?.token;
 
     if (!idToUpdate) {
-      alert("Session error. Please try signing up again.");
+      toast.error("Session error. Please try signing up again.");
       return;
     }
 
@@ -87,11 +88,11 @@ const OnBoarding = ({ type }) => {
           setUser({ ...user, isOnboarded: true });
           navigate(user.role === "student" ? "/qrscanner" : "/dash");
         } else {
-          alert("Profile Setup Complete! Please Login.");
+          toast.success("Profile Setup Complete! Please Login.");
           navigate(`/login/${type}`);
         }
       } else {
-        alert(data.error || "Update failed");
+        toast.error(data.error || "Update failed");
       }
     } catch (err) {
       console.error("Connection error:", err);

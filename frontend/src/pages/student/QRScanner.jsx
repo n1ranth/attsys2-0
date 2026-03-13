@@ -3,6 +3,7 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import "../../styles/student/QRScanner.css";
+import toast from "react-hot-toast";
 
 function QRScanner() {
   const [scanResult, setScanResult] = useState("");
@@ -38,15 +39,15 @@ function QRScanner() {
         const data = await response.json();
 
         if (response.ok) {
-          alert("✅ Attendance Marked!");
+          toast.success("✅ Attendance Marked!");
           navigate("/");
         } else {
-          alert(data.error || "Verification failed");
+          toast.error(data.error || "Verification failed");
           window.location.reload();
         }
       } catch (err) {
         console.error("Verification Error:", err);
-        alert("Server Connection Failed");
+        toast.error("Server Connection Failed");
       }
     };
 

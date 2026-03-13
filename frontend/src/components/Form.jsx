@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "../styles/Form.css";
+import toast from "react-hot-toast";
 
 const Form = ({ formType, type }) => {
   const [email, setEmail] = useState("");
@@ -36,7 +37,7 @@ const Form = ({ formType, type }) => {
             id: data.user.id,
           });
 
-          alert("Login Successful!");
+          toast.success("Login Successful!");
 
           if (!data.user.isOnboarded) {
             navigate(`/onboard/${data.user.role}`);
@@ -45,15 +46,15 @@ const Form = ({ formType, type }) => {
           }
         } else {
           localStorage.setItem("onboardingUserId", data.id);
-          alert("Account created! Let's set up your profile.");
+          toast.success("Account created! Let's set up your profile.");
           navigate(`/onboard/${type}`);
         }
       } else {
-        alert(data.error || "Something went wrong");
+        toast.error(data.error || "Something went wrong");
       }
     } catch (error) {
+      toast.error("Cannot connect to server. Is it running?");
       console.error("Connection error:", error);
-      alert("Cannot connect to server. Is it running?");
     }
   };
 
