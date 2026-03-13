@@ -12,6 +12,7 @@ import OnBoarding from "./pages/OnBoarding";
 import TeacherDash from "./pages/teacher/TeacherDash";
 import AttendancePage from "./pages/teacher/AttendancePage";
 import StudentDash from "./pages/student/StudentDash";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const App = () => {
 
   return (
     <Routes>
+      <Toaster position="top-center" reverseOrder={false} />
       <Route path="/" element={<LandingPage />} />
       <Route path="/login/student" element={<LoginPage type="student" />} />
       <Route path="/login/teacher" element={<LoginPage type="teacher" />} />
