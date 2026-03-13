@@ -11,7 +11,7 @@ const app = express();
 
 app.use(cors({
   origin: "https://attsys2-0.netlify.app",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }));
 app.use(express.json());
 
