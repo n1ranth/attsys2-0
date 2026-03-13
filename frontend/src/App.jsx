@@ -38,8 +38,9 @@ const App = () => {
   }, [user, navigate, location.pathname]);
 
   return (
-    <Routes>
+    <>
       <Toaster position="top-center" reverseOrder={false} />
+    <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login/student" element={<LoginPage type="student" />} />
       <Route path="/login/teacher" element={<LoginPage type="teacher" />} />
@@ -89,6 +90,7 @@ const App = () => {
         }
       />
     </Routes>
+    </>
   );
 };
 
