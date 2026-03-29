@@ -46,11 +46,7 @@
   margin-bottom: 5vmin;
 }
 
-#install-btn{
-  animation: landingButtonsFade 1.5s ease-out;
-}
-
-.landing-link, #install-btn {
+.landing-link{
   text-decoration: none;
   padding: 2.5vmin 7vmin;
   font-size: 3.2vmin;
@@ -66,7 +62,7 @@
   text-transform: uppercase;
 }
 
-.landing-link:hover, #install-btn:hover {
+.landing-link:hover {
   background: rgba(0, 255, 242, 0.08);
   border-color: #00fff2;
   transform: translateY(-1vmin) scale(1.02);
@@ -74,7 +70,7 @@
   color: #00fff2;
 }
 
-.landing-link:active, #install-btn:active {
+.landing-link:active {
   transform: translateY(-0.2vmin) scale(0.98);
 }
 
@@ -113,7 +109,7 @@
     letter-spacing: 1vmin;
   }
 
-  .landing-link, #install-btn {
+  .landing-link {
     font-size: 5.5vmin;
     padding: 4vmin 12vmin;
     text-align: center;

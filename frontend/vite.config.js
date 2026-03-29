@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         id: "/",
         name: "ATTSYS 2.0",
-        short_name: "ATTSYS",
+        short_name: "ATTSYS 2.0",
         description: "Automated Attendance Ecosystem",
         theme_color: "#000000",
         background_color: "#000000",

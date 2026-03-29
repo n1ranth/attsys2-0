@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import ProfilePic from "../assets/profile.svg";
+import { usePWAInstall } from "../hooks/usePWAInstall.js";
 import "../styles/NavBar.css";
 import toast from "react-hot-toast";
 
 const NavBar = () => {
+  const { isInstallable, install } = usePWAInstall();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const id = user?.id;
@@ -95,6 +97,11 @@ const NavBar = () => {
         {showLogout && (
           <div id="nav-menu">
             <p>Hi, {userName}</p>
+        {isInstallable && (
+          <button id="install-btn" onClick={install}>
+            Install App
+          </button>
+        )}
             <button id="logout" onClick={handleLogOut}>
               Logout
             </button>

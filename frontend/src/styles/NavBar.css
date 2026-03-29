@@ -79,7 +79,7 @@
   white-space: nowrap;
 }
 
-#logout {
+#logout, #install-btn {
   width: 100%;
   padding: 1.2vmin;
   background: rgba(255, 71, 71, 0.08);
@@ -97,6 +97,15 @@
   background: #ff4747;
   color: #ffffff;
   box-shadow: 0 0 2vmin rgba(255, 71, 71, 0.4);
+}
+
+#install-btn{
+  color: var(--text-color);
+}
+
+#install-btn:hover{
+  background-color: var(--text-color);
+  color: var(--bg-color);
 }
 
 @keyframes menuDrop {
@@ -131,7 +140,7 @@
     padding: 4vmin;
   }
 
-  #nav-menu p, #logout{
+  #nav-menu p, #logout, #install-btn{
     font-size: 3.5vmin;
   }
 }
