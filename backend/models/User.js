@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     type: [
     {
       subject: { type: String },
-      sections: [{ type: String }],
+      sections: [{ type: Number }],
       semester: { type: Number },
     },
   ],

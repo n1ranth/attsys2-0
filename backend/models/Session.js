@@ -9,7 +9,8 @@ const sessionSchema = new mongoose.Schema({
   },
   branch: { type: String, required: true },
   subject: { type: String, required: true },
-  section: { type: String, required: true },
+  section: { type: Number, required: true },
+  semester: { type: Number, required: true },
   expiresAt: { type: Date, required: true },
 });
 

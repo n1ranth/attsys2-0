@@ -7,28 +7,32 @@ const router = express.Router();
 
 router.get("/qr", async (req, res) => {
   try {
-    const { teacherId, branch, section, subject } = req.query;
+    const { teacherId, branch, section, subject, semester } = req.query;
 
-    if (!teacherId || !section || !subject || !branch) {
+    if (!teacherId || !section || !subject || !branch || !semester) {
       return res
         .status(400)
-        .send("Missing teacherId, branch, section or subject");
+        .send("Missing teacherId, branch, section, semester or subject");
     }
 
     const passkey = crypto.randomBytes(16).toString("hex");
 
-    const complexPayload = `${branch}|${subject}|${section}|${passkey}|${Date.now()}`;
+    // UPDATED: Added semester into the pipe-separated payload 
+    // This allows the QRScanner to extract it using .split("|")
+    const complexPayload = `${branch}|${subject}|${section}|${passkey}|${semester}|${Date.now()}`;
 
     await Session.create({
       passkey,
       teacherId,
       subject,
-      section,
+      section: Number(section),   // Ensure it's a number for DB consistency
+      semester: Number(semester), // Ensure it's a number for DB consistency
       branch,
-      expiresAt: new Date(Date.now() + 60 * 1000),
+      expiresAt: new Date(Date.now() + 60 * 1000), // 1 minute expiry
     });
 
     res.setHeader("Content-Type", "image/png");
+    
     await qrcode.toFileStream(res, complexPayload, {
       errorCorrectionLevel: "H",
       margin: 1,
@@ -38,7 +42,7 @@ router.get("/qr", async (req, res) => {
       },
     });
 
-    console.log(`Successfully generated QR for: ${teacherId} - ${subject}`);
+    console.log(`Successfully generated QR for: ${teacherId} - ${subject} (Sem: ${semester})`);
   } catch (err) {
     console.error("Internal Server Error Detail:", err);
     res.status(500).send(err.message);

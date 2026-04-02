@@ -1,23 +1,28 @@
 import express from "express";
 import Attendance from "../models/Attendance.js";
-import { Session } from "../models/Session.js"; 
-import User from "../models/User.js"; 
+import { Session } from "../models/Session.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
+// 1. Verify and Mark Attendance
 router.post("/verify", async (req, res) => {
-  const { passkey, studentId, branch, subject, section } = req.body;
+  // Added semester to destructuring
+  const { passkey, studentId, branch, subject, section, semester } = req.body;
 
   try {
-    const activeSession = await Session.findOne({ 
-      passkey, 
-      branch, 
-      subject, 
-      section 
+    const activeSession = await Session.findOne({
+      passkey,
+      branch,
+      subject,
+      section,
+      semester, // Context check for semester
     });
 
     if (!activeSession) {
-      return res.status(400).json({ error: "Invalid QR code or context mismatch" });
+      return res
+        .status(400)
+        .json({ error: "Invalid QR code or context mismatch" });
     }
 
     if (new Date() > activeSession.expiresAt) {
@@ -29,12 +34,15 @@ router.post("/verify", async (req, res) => {
       return res.status(404).json({ error: "Student profile not found" });
     }
 
+    // Validation including semester check
     const isCorrectBranch = student.branch === branch;
-    const isCorrectSection = student.sections.includes(section);
+    const isCorrectSection = student.section === Number(section);
+    // Assuming student model also stores their current semester
+    // const isCorrectSemester = student.semester === Number(semester);
 
     if (!isCorrectBranch || !isCorrectSection) {
       return res.status(403).json({
-        error: `Access denied: You belong to ${student.branch}-${student.sections.join(', ')}, but this QR is for ${branch}-${section}.`
+        error: `Access denied: Target ${branch}-${section}, but you are ${student.branch}-${student.section}`,
       });
     }
 
@@ -45,75 +53,102 @@ router.post("/verify", async (req, res) => {
 
     const alreadyMarked = await Attendance.findOne({
       studentId,
-      subject, 
-      date: { $gte: todayStart, $lte: todayEnd }
+      subject,
+      semester, // Ensure they haven't marked for this semester/subject today
+      date: { $gte: todayStart, $lte: todayEnd },
     });
 
     if (alreadyMarked) {
-      return res.status(400).json({ error: "Attendance already recorded for this subject today" });
+      return res
+        .status(400)
+        .json({ error: "Attendance already recorded for this subject today" });
     }
 
     await Attendance.create({
       studentId,
-      usn: student.usn,        
+      usn: student.usn,
       studentName: student.name,
       teacherId: activeSession.teacherId,
-      subject, 
+      subject,
       section,
       branch,
+      semester, // Saving semester to the Attendance record
       status: "Present",
-      date: new Date()
+      date: new Date(),
     });
 
     res.status(200).json({ message: "Attendance marked successfully!" });
-
   } catch (err) {
     console.error("VERIFY ERROR:", err);
     res.status(500).json({ error: "Server error during verification" });
   }
 });
 
-router.get("/list/:teacherId/:branch/:subject/:section", async (req, res) => {
-  try {
-    const { teacherId, branch, subject, section } = req.params;
+// 2. Fetch Attendance List (Added :semester to the URL params)
+router.get(
+  "/list/:teacherId/:branch/:subject/:section/:semester",
+  async (req, res) => {
+    try {
+      const { teacherId, branch, subject, semester, section } = req.params;
 
-    const allStudents = await User.find({ sections: section, branch });
+      const sectionNum = parseInt(section, 10);
+      const semesterNum = parseInt(semester, 10);
 
-    const todayStart = new Date().setHours(0, 0, 0, 0);
-    const attendanceRecords = await Attendance.find({ 
-      teacherId, 
-      branch,
-      subject, 
-      section, 
-      date: { $gte: new Date(todayStart) } 
-    });
+      // Validation: If either is NaN, return a clean error instead of crashing
+      if (isNaN(sectionNum) || isNaN(semesterNum)) {
+        return res.status(400).json({
+          error: `Invalid parameters. Received Section: ${section}, Semester: ${semester}`,
+        });
+      }
 
-    const presentUSNs = new Set(attendanceRecords.map(rec => rec.usn));
+      // Find all students matching this specific branch, semester, and section
+      const allStudents = await User.find({
+        section: Number(section),
+        branch,
+        semester: Number(semester), // Uncomment if your User model tracks semester
+      });
 
-    let combinedData = allStudents.map((student) => {
-      const isPresent = presentUSNs.has(student.usn);
-      return {
-        Name: student.name || "N/A",
-        USN: student.usn || "N/A",
-        Status: isPresent ? "Present" : "Absent"
-      };
-    });
+      const todayStart = new Date().setHours(0, 0, 0, 0);
 
-    combinedData.sort((a, b) => a.USN.localeCompare(b.USN, undefined, {
-      numeric: true,
-      sensitivity: 'base'
-    }));
+      // Find attendance records for this specific semester
+      const attendanceRecords = await Attendance.find({
+        teacherId,
+        branch,
+        subject,
+        semester: Number(semester),
+        section: Number(section),
+        date: { $gte: new Date(todayStart) },
+      });
 
-    const finalFormattedData = combinedData.map((item, index) => ({
-      Sno: (index + 1).toString().padStart(2, '0'),
-      ...item
-    }));
+      const presentUSNs = new Set(attendanceRecords.map((rec) => rec.usn));
 
-    res.status(200).json(finalFormattedData);
-  } catch (err) {
-    console.error("Fetch List Error:", err);
-    res.status(500).json({ error: "Failed to fetch list" });
-  }
-});
+      let combinedData = allStudents.map((student) => {
+        const isPresent = presentUSNs.has(student.usn);
+        return {
+          Name: student.name || "N/A",
+          USN: student.usn || "N/A",
+          Status: isPresent ? "Present" : "Absent",
+        };
+      });
+
+      combinedData.sort((a, b) =>
+        a.USN.localeCompare(b.USN, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        }),
+      );
+
+      const finalFormattedData = combinedData.map((item, index) => ({
+        Sno: (index + 1).toString().padStart(2, "0"),
+        ...item,
+      }));
+
+      res.status(200).json(finalFormattedData);
+    } catch (err) {
+      console.error("Fetch List Error:", err);
+      res.status(500).json({ error: "Failed to fetch list" });
+    }
+  },
+);
 
 export default router;

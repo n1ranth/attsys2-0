@@ -58,7 +58,7 @@ const TeacherDash = () => {
                       <button
                         key={secIndex}
                         className="attendance-btn"
-                        onClick={() => navigate(`/attendance/${branch}/${course.subject}/${sec}`)}
+                        onClick={() => navigate(`/attendance/${branch}/${course.subject}/${sec}/${course.semester}`)}
                       >
                         Section {sec}
                       </button>

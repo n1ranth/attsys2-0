@@ -34,8 +34,6 @@ const calculateStudentDetails = (emailString) => {
       semester = year * 2;
     }
 
-      console.log(semester);
-
     return {
       year: year,
       semester: semester,

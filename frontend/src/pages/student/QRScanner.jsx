@@ -23,7 +23,7 @@ function QRScanner() {
       scanner.clear();
       setScanResult(decodedText);
 
-      const [branch, subject, section, passkey] = decodedText.split("|");
+      const [branch, subject, section, passkey, semester] = decodedText.split("|");
 
       try {
         const API_BASE_URL = import.meta.env.VITE_PORT
@@ -35,7 +35,8 @@ function QRScanner() {
           body: JSON.stringify({
             branch,
             subject,
-            section,
+            section: Number(section),
+            semester: Number(semester),
             passkey,
             studentId: user?.id,
           }),

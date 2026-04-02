@@ -98,8 +98,8 @@ const OnBoarding = ({ type }) => {
         : {
           courses: courseLoads.map((c) => ({
             subject: c.subject,
-            sections: c.sections.trim().split(/\s+/),
-            semester: c.semester,
+            sections: c.sections.trim().split(/\s+/).map((sec) => parseInt(sec, 10)),
+            semester: Number(c.semester),
           })),
         }),
     };
