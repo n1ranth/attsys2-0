@@ -1,7 +1,7 @@
 # Frontend
 
 ## Setup
-  
+
 <ol>
   <li>
     <code>cd</code> into the frontend dir then run this command<br/>

@@ -1,11 +1,11 @@
-import Form from "../components/Form"
+import Form from '../components/Form';
 
 const SignUp = ({ type }) => {
-  return (
-    <div className="SignUp">
-      <Form formType="Sign Up" type={type} />
-    </div>
-  );
+    return (
+        <div className="SignUp">
+            <Form formType="Sign Up" type={type} />
+        </div>
+    );
 };
 
 export default SignUp;

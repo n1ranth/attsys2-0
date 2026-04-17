@@ -1,7 +1,7 @@
 # Backend
 
 ## Setup
-  
+
 <ol>
   <li>
     <code>cd</code> into the frontend dir then run this command<br/>
@@ -18,11 +18,12 @@
 
 [nodemon] 3.1.11
 [nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): *.*
+[nodemon] watching path(s): _._
 [nodemon] watching extensions: js,mjs,cjs,json
 [nodemon] starting `node server.js`
 [dotenv@17.2.4] injecting env (3) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
 🚀 Server running on port 5000
 ✅ Connected to MongoDB</code>
+
   </li>
 </ol>
