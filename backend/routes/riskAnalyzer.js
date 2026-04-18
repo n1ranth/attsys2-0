@@ -89,15 +89,25 @@ router.get('/summary', async (req, res) => {
         let totalAssignments = 0;
         
         students.forEach(student => {
-            // Count risk levels
-            const riskLevel = student.aiInsights?.riskLevel || 'Medium';
-            riskDistribution[riskLevel]++;
+            // Count risk levels with proper validation
+            let riskLevel = student.aiInsights?.riskLevel || 'Medium';
             
-            // Sum metrics
-            totalAttendance += student.attendance;
-            totalMarks += student.marks;
-            totalEngagement += student.engagement;
-            totalAssignments += student.assignments;
+            // Normalize risk level to handle different casing and ensure valid keys
+            riskLevel = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase();
+            
+            // Only increment if the risk level exists in our distribution object
+            if (riskDistribution.hasOwnProperty(riskLevel)) {
+                riskDistribution[riskLevel]++;
+            } else {
+                // Default to Medium if unknown risk level
+                riskDistribution.Medium++;
+            }
+            
+            // Sum metrics with validation
+            totalAttendance += student.attendance || 0;
+            totalMarks += student.marks || 0;
+            totalEngagement += student.engagement || 0;
+            totalAssignments += student.assignments || 0;
         });
         
         const count = students.length;
@@ -111,14 +121,21 @@ router.get('/summary', async (req, res) => {
         // Identify at-risk students (High risk or multiple low metrics)
         const atRiskStudents = students.filter(student => {
             const riskLevel = student.aiInsights?.riskLevel;
-            if (riskLevel === 'High') return true;
+            const normalizedRiskLevel = riskLevel ? riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1).toLowerCase() : 'Medium';
             
-            // Check for multiple low metrics
+            if (normalizedRiskLevel === 'High') return true;
+            
+            // Check for multiple low metrics with validation
+            const attendance = student.attendance || 0;
+            const marks = student.marks || 0;
+            const engagement = student.engagement || 0;
+            const assignments = student.assignments || 0;
+            
             const lowMetrics = [
-                student.attendance < 60,
-                student.marks < 60,
-                student.engagement < 60,
-                student.assignments < 60
+                attendance < 60,
+                marks < 60,
+                engagement < 60,
+                assignments < 60
             ].filter(Boolean).length;
             
             return lowMetrics >= 3;

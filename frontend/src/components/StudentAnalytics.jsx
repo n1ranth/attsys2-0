@@ -181,12 +181,14 @@ const StudentAnalytics = ({ sessionId }) => {
                         <div className="risk-bars">
                             {Object.entries(summary.riskDistribution).map(([level, count]) => (
                                 <div key={level} className="risk-bar">
-                                    <div className="risk-label">{level}</div>
+                                    <div className="risk-label">
+                                        {level}
+                                    </div>
                                     <div className="risk-progress">
                                         <div 
                                             className="risk-fill"
                                             style={{ 
-                                                width: `${(count / summary.totalStudents) * 100}%`,
+                                                width: `${summary.totalStudents > 0 ? (count / summary.totalStudents) * 100 : 0}%`,
                                                 backgroundColor: getRiskColor(level)
                                             }}
                                         />

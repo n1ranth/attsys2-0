@@ -76,6 +76,30 @@ const AssignmentsTab = ({ teacherId }) => {
         }
     };
 
+    const getStatusEmoji = (status) => {
+        switch (status) {
+            case 'active': return '✅';
+            case 'expired': return '⏰';
+            case 'draft': return '📝';
+            default: return '📋';
+        }
+    };
+
+    const getRelativeTime = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = date - now;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Tomorrow';
+        if (diffDays === -1) return 'Yesterday';
+        if (diffDays > 0 && diffDays <= 7) return `In ${diffDays} days`;
+        if (diffDays < 0 && diffDays >= -7) return `${Math.abs(diffDays)} days ago`;
+        
+        return formatDate(dateString);
+    };
+
     const getFilteredAssignments = () => {
         const now = new Date();
         
@@ -125,17 +149,23 @@ const AssignmentsTab = ({ teacherId }) => {
         <div className="assignments-tab">
             {/* Header with Stats */}
             <div className="assignments-header">
-                <h3 className="section-title">Assignments Overview</h3>
+                <h3 className="section-title">
+                    <span className="section-icon">📚</span>
+                    Assignments Overview
+                </h3>
                 <div className="assignments-stats">
                     <div className="stat-item">
+                        <span className="stat-icon">📚</span>
                         <span className="stat-number">{stats.total}</span>
                         <span className="stat-label">Total</span>
                     </div>
                     <div className="stat-item">
+                        <span className="stat-icon">✅</span>
                         <span className="stat-number">{stats.active}</span>
                         <span className="stat-label">Active</span>
                     </div>
                     <div className="stat-item">
+                        <span className="stat-icon">⏰</span>
                         <span className="stat-number">{stats.overdue}</span>
                         <span className="stat-label">Overdue</span>
                     </div>
@@ -183,6 +213,7 @@ const AssignmentsTab = ({ teacherId }) => {
                                         className="status-badge"
                                         style={{ backgroundColor: getStatusColor(assignment.status) }}
                                     >
+                                        <span className="status-emoji">{getStatusEmoji(assignment.status)}</span>
                                         {assignment.status}
                                     </span>
                                 </div>
@@ -196,15 +227,15 @@ const AssignmentsTab = ({ teacherId }) => {
                                 <div className="assignment-meta">
                                     <div className="meta-item">
                                         <span className="meta-label">Subject:</span>
-                                        <span className="meta-value">{assignment.subject}</span>
+                                        <span className="meta-value">{'\ud83d\udcd6'} {assignment.subject}</span>
                                     </div>
                                     <div className="meta-item">
                                         <span className="meta-label">Section:</span>
-                                        <span className="meta-value">{assignment.section}</span>
+                                        <span className="meta-value">{'\ud83d\udc65'} {assignment.section}</span>
                                     </div>
                                     <div className="meta-item">
                                         <span className="meta-label">Semester:</span>
-                                        <span className="meta-value">{assignment.semester}</span>
+                                        <span className="meta-value">{'\ud83d\udcc5'} {assignment.semester}</span>
                                     </div>
                                 </div>
                                 
@@ -212,14 +243,14 @@ const AssignmentsTab = ({ teacherId }) => {
                                     <div className="due-date">
                                         <span className="due-label">Due:</span>
                                         <span className={`due-value ${isOverdue(assignment.dueDate) ? 'overdue' : ''}`}>
-                                            {formatDate(assignment.dueDate)}
+                                            {isOverdue(assignment.dueDate) ? '\u23f0' : '\ud83d\udcc5'} {getRelativeTime(assignment.dueDate)}
                                         </span>
                                     </div>
                                     {assignment.submissions && (
                                         <div className="submissions-count">
                                             <span className="submissions-label">Submissions:</span>
                                             <span className="submissions-value">
-                                                {assignment.submissions.length}
+                                                {'\ud83d\udcdd'} {assignment.submissions.length}
                                             </span>
                                         </div>
                                     )}

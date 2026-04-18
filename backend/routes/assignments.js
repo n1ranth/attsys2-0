@@ -222,35 +222,31 @@ router.get('/student/:studentId', async (req, res) => {
         const { studentId } = req.params;
         const { subject, section, semester } = req.query;
 
-        // First try to find fake student in Student model
-        let student = await Student.findOne({ student_id: studentId });
+        // Find real student by USN
+        const student = await User.findOne({ usn: studentId, role: 'student' });
         
-        // If not found, try real student in User model
         if (!student) {
-            student = await User.findById(studentId);
-            if (!student || student.role !== 'student') {
-                return res.status(404).json({ error: 'Student not found' });
-            }
+            return res.status(404).json({ error: 'Student not found' });
         }
 
-        // Build query based on student type
-        const query = {};
-        
-        if (student.section !== undefined) {
-            // For fake students from Student model
-            query.section = student.section.toString();
-            query.semester = student.semester ? student.semester.toString() : '1';
-        } else {
-            // For real students from User model
-            query.section = student.section.toString();
-            query.semester = student.semester ? student.semester.toString() : '1';
+        console.log('Found student:', student.name, 'Section:', student.section, 'Semester:', student.semester);
+
+        // Build simple query - use student's actual section and semester
+        const query = {
+            section: student.section.toString(),
+            semester: student.semester.toString()
+        };
+
+        if (subject) {
+            query.subject = subject;
         }
 
-        if (subject) query.subject = subject;
+        console.log('Assignments query:', query);
 
         const assignments = await Assignment.find(query)
-            .sort({ dueDate: 1 })
-            .populate('teacherId', 'name email');
+            .sort({ dueDate: 1 });
+
+        console.log(`Found ${assignments.length} assignments`);
 
         res.status(200).json(assignments);
     } catch (err) {

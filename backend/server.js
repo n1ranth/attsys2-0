@@ -41,7 +41,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/risk', riskRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/assignment', assignmentMockRoutes);
-app.use('/api/student', studentDataRoutes);
 app.use('/api/analyzer', riskAnalyzerRoutes);
+app.use('/api/student', studentDataRoutes);
 
 app.listen(PORT, HOST, () => console.log('🚀 Server running on port 5000'));

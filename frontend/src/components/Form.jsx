@@ -83,11 +83,6 @@ const Form = ({ formType, type }) => {
                 body: JSON.stringify(payload),
             });
 
-            if (!response.ok) {
-                console.error('API Response Error:', response.status, response.statusText);
-                throw new Error(`Failed to connect to server: ${response.status}`);
-            }
-
             const data = await response.json();
 
             if (response.ok) {

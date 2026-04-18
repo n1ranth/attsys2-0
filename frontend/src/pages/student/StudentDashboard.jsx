@@ -13,30 +13,68 @@ const StudentDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Load student data from localStorage on component mount
+    // Load student data from API or localStorage on component mount
     useEffect(() => {
-        const loadStudentData = () => {
+        const loadStudentData = async () => {
             try {
-                // Get data from localStorage (from fake login)
-                const data = getStudentData();
+                // First check if we have fake student data in localStorage
+                const fakeData = getStudentData();
                 
-                if (!data) {
-                    setError('No student data found. Please login first.');
-                    setTimeout(() => navigate('/student/login'), 2000);
+                if (fakeData) {
+                    console.log('Loaded fake student data:', fakeData);
+                    setStudentData(fakeData);
+                    setLoading(false);
                     return;
                 }
                 
-                console.log('Loaded student data:', data); // Debug log
-                setStudentData(data);
-                setLoading(false);
+                // If no fake data, try to fetch real student data using authenticated user
+                if (user && user.role === 'student') {
+                    const API_BASE_URL = import.meta.env.VITE_PORT
+                        ? `${import.meta.env.VITE_URL}:${import.meta.env.VITE_PORT}`
+                        : import.meta.env.VITE_URL;
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/profile/${user.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const profileData = await response.json();
+                        console.log('Loaded real student data:', profileData);
+                        
+                        // Transform profile data to match dashboard format
+                        const transformedData = {
+                            student_id: profileData.usn || profileData._id,
+                            name: profileData.name || 'Student',
+                            attendance: 75, // Default values - you can enhance this
+                            marks: 70,
+                            engagement: 65,
+                            assignments: 80,
+                            branch: profileData.branch,
+                            semester: profileData.semester,
+                            section: profileData.section
+                        };
+                        
+                        setStudentData(transformedData);
+                        setLoading(false);
+                        return;
+                    }
+                }
+                
+                // If no data found, redirect to appropriate login
+                setError('No student data found. Please login first.');
+                setTimeout(() => navigate('/student/login'), 2000);
+                
             } catch (err) {
+                console.error('Failed to load student data:', err);
                 setError('Failed to load student data');
                 setLoading(false);
             }
         };
 
         loadStudentData();
-    }, [navigate]);
+    }, [navigate, user]);
 
     // Listen for student data updates
     useEffect(() => {

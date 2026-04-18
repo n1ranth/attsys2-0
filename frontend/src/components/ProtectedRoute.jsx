@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth.js';
 const ProtectedRoute = ({ children, allowedRole }) => {
     const { user } = useAuth();
 
-    // Check for student data in localStorage for student routes
+    // Check for student data in localStorage for fake student login
     const getStudentData = () => {
         try {
             const studentData = localStorage.getItem('studentData');
@@ -17,12 +17,21 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     const studentData = getStudentData();
     const isStudentRoute = location.pathname.includes('/dash/student');
 
-    // Allow access if it's a student route and student data exists
-    if (isStudentRoute && studentData) {
-        return children;
+    // Handle student routes - allow either fake student data OR real authenticated student
+    if (isStudentRoute) {
+        // Allow access if fake student data exists
+        if (studentData) {
+            return children;
+        }
+        // Allow access if real authenticated student
+        if (user && user.role === 'student' && user.isOnboarded) {
+            return children;
+        }
+        // Redirect to appropriate login based on what's available
+        return <Navigate to="/student/login" replace />;
     }
 
-    // Check for authenticated user
+    // Check for authenticated user (for non-student routes)
     if (!user) return <Navigate to="/" replace />;
 
     if (!user.isOnboarded) {
