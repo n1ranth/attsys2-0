@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { updateAttendance } from '../../utils/attendanceUtils';
 import '../../styles/student/QRScanner.css';
 import toast from 'react-hot-toast';
 
@@ -45,8 +46,16 @@ function QRScanner() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    toast.success('Attendance Marked!');
-                    navigate('/');
+                    // Update attendance in localStorage
+                    const attendanceUpdated = updateAttendance();
+                    
+                    if (attendanceUpdated) {
+                        toast.success('Attendance Marked!');
+                        navigate('/student/dashboard');
+                    } else {
+                        toast.error('Failed to update local attendance data');
+                        navigate('/student/dashboard');
+                    }
                 } else {
                     toast.error(data.error || 'Verification failed');
                     window.location.reload();

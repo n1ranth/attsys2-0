@@ -1,0 +1,468 @@
+.student-analytics {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #f8fafc;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Header Section */
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.loading-state, .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.error-state h3 {
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+.retry-button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.retry-button:hover {
+    background: #2563eb;
+}
+
+/* Analytics Summary */
+.analytics-summary {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card.primary {
+    border-top: 4px solid #3b82f6;
+}
+
+.summary-card.danger {
+    border-top: 4px solid #ef4444;
+}
+
+.summary-card.info {
+    border-top: 4px solid #06b6d4;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.summary-card h3 {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+.summary-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.summary-value.at-risk {
+    color: #ef4444;
+}
+
+.averages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.average-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.average-item span:first-child {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Risk Distribution */
+.risk-distribution {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.risk-distribution h3 {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+}
+
+.risk-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.risk-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.risk-label {
+    min-width: 80px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.risk-progress {
+    flex: 1;
+    height: 24px;
+    background: #f3f4f6;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.risk-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.3s ease;
+}
+
+.risk-count {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* At-Risk Students */
+.at-risk-students-section {
+    margin-bottom: 3rem;
+}
+
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+}
+
+.student-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.student-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.student-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.student-info {
+    flex: 1;
+}
+
+.student-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.student-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.student-id {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-family: monospace;
+}
+
+.student-class {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.risk-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.risk-badge.low {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.risk-badge.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.risk-badge.high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.student-metrics {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.metric:last-child {
+    margin-bottom: 0;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 1rem;
+}
+
+.student-insights {
+padding: 1.5rem;
+}
+
+.student-insights h4 {
+font-size: 1rem;
+font-weight: 600;
+color: #1e293b;
+margin: 0 0 1rem 0;
+}
+
+.student-insights ul {
+list-style: none;
+padding: 0;
+margin: 0 0 1.5rem 0;
+}
+
+.student-insights li {
+font-size: 0.875rem;
+color: #475569;
+margin-bottom: 0.75rem;
+padding-left: 1.5rem;
+position: relative;
+line-height: 1.5;
+}
+
+.student-insights li::before {
+content: "·";
+position: absolute;
+left: 0.5rem;
+color: #3b82f6;
+font-weight: bold;
+}
+
+.focus-areas h5 {
+font-size: 0.875rem;
+font-weight: 600;
+color: #64748b;
+margin: 0 0 0.75rem 0;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+
+.focus-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 0.5rem;
+}
+
+.focus-tag {
+padding: 0.375rem 0.75rem;
+background: #eff6ff;
+color: #1e40af;
+border-radius: 20px;
+font-size: 0.75rem;
+font-weight: 500;
+border: 1px solid #bfdbfe;
+}
+
+.empty-state {
+text-align: center;
+padding: 4rem 2rem;
+background: white;
+border-radius: 12px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+font-size: 3rem;
+margin-bottom: 1rem;
+opacity: 0.5;
+}
+
+.empty-state h3 {
+font-size: 1.25rem;
+color: #1e293b;
+margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+color: #64748b;
+font-size: 0.875rem;
+}
+
+/* Section Header */
+.section-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 2rem;
+}
+
+.clear-button {
+background: #ef4444;
+color: white;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 0.5rem;
+font-size: 0.875rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.clear-button:hover:not(:disabled) {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.clear-button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .student-analytics {
+        padding: 1rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .clear-button {
+        width: 100%;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .students-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .student-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .risk-bars {
+        gap: 0.75rem;
+    }
+    
+    .risk-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .risk-label {
+        min-width: auto;
+    }
+}

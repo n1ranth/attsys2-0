@@ -67,6 +67,8 @@ const Form = ({ formType, type }) => {
                     ? `${import.meta.env.VITE_URL}:${import.meta.env.VITE_PORT}`
                     : import.meta.env.VITE_URL;
 
+            console.log('API Base URL:', API_BASE_URL);
+
             const payload = {
                 email,
                 password,
@@ -80,6 +82,11 @@ const Form = ({ formType, type }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
+
+            if (!response.ok) {
+                console.error('API Response Error:', response.status, response.statusText);
+                throw new Error(`Failed to connect to server: ${response.status}`);
+            }
 
             const data = await response.json();
 
@@ -111,8 +118,19 @@ const Form = ({ formType, type }) => {
                 setIsLoading(false);
             }
         } catch (error) {
-            toast.error('Cannot connect to server. Is it running?');
-            console.error('Connection error:', error);
+            console.error('Login error:', error);
+            
+            // If it's a connection error, retry once
+            if (error.message.includes('Failed to connect to server')) {
+                toast.error('Connection failed. Retrying...');
+                setTimeout(() => {
+                    // Retry the login automatically
+                    handleSubmit(e);
+                }, 2000);
+            } else {
+                toast.error(error.message || 'Login failed. Please try again.');
+            }
+        } finally {
             setIsLoading(false);
         }
     };

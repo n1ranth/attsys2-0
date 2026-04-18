@@ -1,6 +1,7 @@
 import express from 'express';
 import Assignment from '../models/Assignment.js';
 import User from '../models/User.js';
+import Student from '../models/Student.js';
 
 const router = express.Router();
 
@@ -221,17 +222,29 @@ router.get('/student/:studentId', async (req, res) => {
         const { studentId } = req.params;
         const { subject, section, semester } = req.query;
 
-        // Get student info to filter by their section and semester
-        const student = await User.findById(studentId);
-        if (!student || student.role !== 'student') {
-            return res.status(404).json({ error: 'Student not found' });
+        // First try to find fake student in Student model
+        let student = await Student.findOne({ student_id: studentId });
+        
+        // If not found, try real student in User model
+        if (!student) {
+            student = await User.findById(studentId);
+            if (!student || student.role !== 'student') {
+                return res.status(404).json({ error: 'Student not found' });
+            }
         }
 
-        // Build query
-        const query = {
-            'section': student.section.toString(),
-            'semester': student.semester.toString()
-        };
+        // Build query based on student type
+        const query = {};
+        
+        if (student.section !== undefined) {
+            // For fake students from Student model
+            query.section = student.section.toString();
+            query.semester = student.semester ? student.semester.toString() : '1';
+        } else {
+            // For real students from User model
+            query.section = student.section.toString();
+            query.semester = student.semester ? student.semester.toString() : '1';
+        }
 
         if (subject) query.subject = subject;
 

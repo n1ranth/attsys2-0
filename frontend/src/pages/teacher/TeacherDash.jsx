@@ -1,20 +1,54 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth';
+import { Toaster, toast } from 'react-hot-toast';
 import CreateAssignment from './CreateAssignment';
 import RiskAnalysis from "../../components/RiskAnalysis";
+import StudentAnalytics from "../../components/StudentAnalytics";
+import AssignmentsTab from "../../components/AssignmentsTab";
 import '../../styles/teacher/TeacherDash.css';
 
 const TeacherDash = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { user } = useAuth();
 
     const [courses, setCourses] = useState([]);
     const [branch, setBranch] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [hoveredCourse, setHoveredCourse] = useState(null);
+    const [sessionId, setSessionId] = useState(null);
+
+    useEffect(() => {
+        // Initialize session when teacher logs in
+        const initializeSession = async () => {
+            console.log('User object:', user);
+            console.log('User sessionId:', user?.sessionId);
+            
+            if (user?.sessionId) {
+                setSessionId(user.sessionId);
+                console.log('Set sessionId to:', user.sessionId);
+                
+                // Clear any existing students for this session
+                try {
+                    const API_BASE_URL = import.meta.env.VITE_PORT
+                        ? `${import.meta.env.VITE_URL}:${import.meta.env.VITE_PORT}`
+                        : import.meta.env.VITE_URL;
+
+                    await fetch(`${API_BASE_URL}/api/analyzer/clear-session/${user.sessionId}`, {
+                        method: 'DELETE'
+                    });
+                    console.log('Cleared previous session data');
+                } catch (error) {
+                    console.error('Error clearing session:', error);
+                }
+            }
+        };
+
+        initializeSession();
+    }, [user]);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -120,7 +154,6 @@ const TeacherDash = () => {
                 {/* Attendance Section */}
                 <section className="dashboard-section">
                     <h2 className="section-header">
-                        <span className="section-icon">📊</span>
                         Attendance Management
                     </h2>
                     
@@ -155,13 +188,11 @@ const TeacherDash = () => {
                                                     }
                                                     aria-label={`Take attendance for Section ${sec} in ${course.subject}`}
                                                 >
-                                                    <span className="btn-icon">📝</span>
                                                     Section {sec}
                                                 </button>
                                             ))
                                         ) : (
                                             <div className="no-sections">
-                                                <span className="no-data-icon">📋</span>
                                                 <p className="muted-text">
                                                     No sections assigned
                                                 </p>
@@ -173,7 +204,6 @@ const TeacherDash = () => {
                         </div>
                     ) : (
                         <div className="no-data">
-                            <span className="no-data-icon">📚</span>
                             <p>
                                 No subjects found. Please complete onboarding.
                             </p>
@@ -187,38 +217,41 @@ const TeacherDash = () => {
                 {/* Quick Actions Section */}
                 <section className="dashboard-section">
                     <h2 className="section-header">
-                        <span className="section-icon">⚡</span>
                         Quick Actions
                     </h2>
                     
                     <div className="action-grid">
                         <Link to={`/dash/teacher/${id}/assignments`} className="action-card">
-                            <div className="action-icon">📝</div>
                             <h3 className="action-title">Manage Assignments</h3>
                             <p className="action-description">View and manage all assignments</p>
                         </Link>
 
                         <Link to={`/dash/teacher/${id}/create-assignment`} className="action-card">
-                            <div className="action-icon">➕</div>
                             <h3 className="action-title">Create Assignment</h3>
                             <p className="action-description">Create a new assignment</p>
                         </Link>
 
                         <Link to={`/dash/teacher/${id}/attendance-history`} className="action-card">
-                            <div className="action-icon">📈</div>
                             <h3 className="action-title">Attendance History</h3>
                             <p className="action-description">View attendance records</p>
                         </Link>
                     </div>
                 </section>
 
-                {/* Risk Analysis Section */}
+                {/* Assignments Section */}
                 <section className="dashboard-section">
                     <h2 className="section-header">
-                        <span className="section-icon">🔍</span>
-                        Student Risk Analysis
+                        Assignments Overview
                     </h2>
-                    <RiskAnalysis studentId={id} />
+                    <AssignmentsTab teacherId={id} />
+                </section>
+
+                {/* Student Analytics Section */}
+                <section className="dashboard-section">
+                    <h2 className="section-header">
+                        Student Analytics & Risk Analysis
+                    </h2>
+                    <StudentAnalytics sessionId={sessionId} />
                 </section>
             </div>
         </div>
@@ -226,4 +259,35 @@ const TeacherDash = () => {
 };
 
 export default TeacherDash;
+
+const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    // Trigger the useEffect again by changing a dependency
+    const fetchUserProfile = async () => {
+        if (!id) return;
+
+        try {
+            const API_BASE_URL = import.meta.env.VITE_PORT
+                ? `${import.meta.env.VITE_URL}:${import.meta.env.VITE_PORT}`
+                : import.meta.env.VITE_URL;
+
+            const response = await fetch(`${API_BASE_URL}/api/profile/${id}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                setCourses(data.courses || []);
+                setBranch(data.branch || '');
+                setError(null);
+            } else {
+                setError(data.error || 'Failed to load profile data');
+            }
+        } catch (error) {
+            setError('Connection error. Please check your internet connection.');
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchUserProfile();
+};
 
